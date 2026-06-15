@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Craft Calculator — Last Hunter K: Seoul</title>
+  <link rel="icon" type="image/webp" href="assets/icons/site_avatar.webp" />
+  <link rel="shortcut icon" href="assets/icons/site_avatar.webp" />
+  <link rel="apple-touch-icon" href="assets/icons/site_avatar.webp" />
+  <style>
+    :root {
+      --bg: #070a12;
+      --bg-2: #0c1220;
+      --card: rgba(18, 27, 45, 0.88);
+      --card-2: rgba(12, 18, 31, 0.96);
+      --border: rgba(126, 160, 213, 0.22);
+      --border-strong: rgba(139, 174, 230, 0.42);
+      --text: #edf4ff;
+      --muted: #9fb0ca;
+      --muted-2: #718198;
+      --accent: #6de5ff;
+      --accent-2: #9e7cff;
+      --danger: #ff6b7d;
+      --success: #57e19f;
+      --warning: #ffd166;
+      --normal: #aab0bd;
+      --magic: #52d273;
+      --rare: #4e9fff;
+      --epic: #b46cff;
+      --unique: #ffd34d;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 11px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --focus: 0 0 0 3px rgba(109, 229, 255, 0.22);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { min-height: 100%; background: var(--bg); }
+
+    body {
+      min-height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(109, 229, 255, 0.18), transparent 34rem),
+        radial-gradient(circle at top right, rgba(180, 108, 255, 0.16), transparent 30rem),
+        linear-gradient(135deg, #050812 0%, #0a0f1c 48%, #080b13 100%);
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    textarea { font: inherit; }
+
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: 0.55; }
+
+    a { color: var(--accent); }
+    code { color: #d9f6ff; }
+
+    .app-shell {
+      width: min(1240px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: clamp(16px, 3vw, 24px);
+      background:
+        linear-gradient(135deg, rgba(12, 21, 39, 0.94), rgba(8, 12, 23, 0.94)),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 26px);
+      box-shadow: 0 18px 58px rgba(0, 0, 0, 0.30);
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -40% -20% auto auto;
+      width: 560px;
+      height: 560px;
+      background: radial-gradient(circle, rgba(109, 229, 255, 0.19), transparent 64%);
+      z-index: -1;
+    }
+
+    .hero-layout {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .hero-main {
+      flex: 1 1 620px;
+      min-width: 0;
+    }
+
+    .hero-side {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+
+    .hero-title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      white-space: nowrap;
+      padding: 10px 13px;
+      border-radius: 999px;
+      color: #ffd58f;
+      border: 1px solid rgba(255,177,61,.35);
+      background: rgba(255,177,61,.10);
+      font-weight: 900;
+    }
+
+    .app-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px 8px 8px;
+    }
+
+    .app-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.28);
+      flex: 0 0 auto;
+      object-fit: cover;
+      display: block;
+    }
+
+    h1,
+    h2,
+    h3,
+    p { margin-top: 0; }
+
+    h1 {
+      max-width: 880px;
+      margin: 0;
+      font-size: clamp(1.65rem, 3.6vw, 2.45rem);
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+    }
+
+    .hero p {
+      max-width: 900px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: clamp(0.94rem, 1.7vw, 1.04rem);
+    }
+
+    .top-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .grid-resources { grid-template-columns: repeat(3, minmax(210px, 1fr)); }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: 0 14px 54px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(14px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px 0;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .card-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted-2);
+      font-size: 0.88rem;
+    }
+
+    .card-body { padding: 16px 18px 18px; }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      color: var(--text);
+      background: rgba(3, 8, 18, 0.76);
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+
+    textarea {
+      min-height: 190px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.85rem;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: rgba(109, 229, 255, 0.72);
+      box-shadow: var(--focus);
+      background: rgba(8, 14, 26, 0.9);
+    }
+
+    input[type="number"] { appearance: textfield; }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { margin: 0; }
+
+    .field-help {
+      margin: 0;
+      color: var(--muted-2);
+      font-size: 0.79rem;
+    }
+
+    .resource-field {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background:
+        radial-gradient(circle at 0 0, rgba(109, 229, 255, 0.09), transparent 38%),
+        linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+      padding: 9px;
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr);
+      align-items: center;
+      gap: 11px;
+      min-height: 82px;
+    }
+
+    .resource-field label {
+      display: block;
+      margin: 0 0 5px;
+      color: #c7d4e8;
+      font-size: 0.78rem;
+    }
+
+    .resource-field input {
+      width: 128px;
+      max-width: 100%;
+      min-height: 36px;
+      padding: 7px 10px;
+      font-size: 1rem;
+      font-weight: 850;
+    }
+
+    .resource-main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .resource-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 0;
+      border: 1px solid var(--border-strong);
+      display: inline-grid;
+      place-items: center;
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--accent);
+      background: transparent;
+      overflow: hidden;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .resource-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: transparent;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      min-width: 880px;
+      background: rgba(4, 8, 16, 0.42);
+    }
+
+    .col-item { width: 205px; }
+    .col-shards { width: 78px; }
+    .col-leftovers { width: 214px; }
+    .col-progress { width: 220px; }
+    .col-status { width: 170px; }
+    .col-action { width: 132px; }
+
+    th,
+    td {
+      padding: 9px 10px;
+      border-bottom: 1px solid rgba(126, 160, 213, 0.14);
+      text-align: left;
+      vertical-align: middle;
+      box-sizing: border-box;
+      font-size: 0.86rem;
+    }
+
+    th {
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.035);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    th.th-item {
+      text-align: left;
+      padding-left: 18px;
+    }
+
+    th.th-center {
+      text-align: center;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: rgba(109, 229, 255, 0.045); }
+
+    .section-row th {
+      padding: 12px 14px;
+      border-top: 1px solid rgba(126, 160, 213, 0.24);
+      border-bottom: 1px solid rgba(126, 160, 213, 0.18);
+      background:
+        linear-gradient(90deg, rgba(109, 229, 255, 0.12), rgba(180, 108, 255, 0.07), transparent);
+      color: #dff9ff;
+      font-size: 0.86rem;
+      line-height: 1;
+      letter-spacing: 0.105em;
+      text-transform: uppercase;
+      font-weight: 900;
+      text-align: left;
+    }
+
+    .section-row:first-child th {
+      border-top: 0;
+    }
+
+    .item-cell {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .item-img {
+      width: 54px;
+      height: 54px;
+      border: 1px solid rgba(139, 174, 230, 0.48);
+      border-radius: 0;
+      overflow: hidden;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      color: var(--muted-2);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .item-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: transparent;
+    }
+
+    .item-title {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 850;
+      line-height: 1.15;
+    }
+
+    .item-meta {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .small-input {
+      width: 56px;
+      min-height: 36px;
+      height: 36px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 800;
+      box-sizing: border-box;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .shard-input {
+      width: 62px;
+      min-height: 36px;
+      height: 36px;
+    }
+
+    .shard-edit {
+      display: grid;
+      grid-template-rows: 16px 36px;
+      align-items: start;
+      justify-items: center;
+      gap: 5px;
+      width: 62px;
+      margin: 0 auto;
+    }
+
+    .shard-spacer {
+      visibility: hidden;
+    }
+
+    .leftovers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: start;
+      justify-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .rank-edit {
+      display: grid;
+      grid-template-rows: 16px 36px;
+      align-items: start;
+      justify-items: center;
+      gap: 5px;
+      width: 56px;
+    }
+
+    .rank-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      height: 16px;
+      white-space: nowrap;
+    }
+
+    .rank-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      vertical-align: middle;
+      box-sizing: border-box;
+    }
+
+    .rank-normal { background: var(--normal); }
+    .rank-magic { background: var(--magic); }
+    .rank-rare { background: var(--rare); }
+    .rank-epic { background: var(--epic); }
+    .rank-unique { background: var(--unique); }
+
+    .progress-stack {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .mini-progress {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .mini-bar {
+      flex: 1;
+      min-width: 94px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .mini-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--epic));
+    }
+
+    .normal-missing {
+      min-width: 92px;
+      font-size: 1.4rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .ready {
+      color: var(--success);
+      font-weight: 800;
+    }
+
+    .missing {
+      color: var(--warning);
+      font-weight: 750;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid rgba(109, 229, 255, 0.3);
+      border-radius: 12px;
+      color: var(--text);
+      background: linear-gradient(135deg, rgba(109, 229, 255, 0.14), rgba(158, 124, 255, 0.10));
+      font-weight: 850;
+      transition: transform 0.16s, border-color 0.16s, background 0.16s;
+      white-space: nowrap;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(109, 229, 255, 0.68);
+      background: linear-gradient(135deg, rgba(109, 229, 255, 0.22), rgba(158, 124, 255, 0.17));
+    }
+
+    .btn-primary {
+      color: #06121e;
+      border-color: rgba(109, 229, 255, 0.92);
+      background: linear-gradient(135deg, var(--accent), #91f4ff 42%, #b69cff);
+      box-shadow: 0 12px 36px rgba(109, 229, 255, 0.18);
+    }
+
+    .btn-danger {
+      border-color: rgba(255, 107, 125, 0.42);
+      background: rgba(255, 107, 125, 0.12);
+    }
+
+    .action-cell { min-width: 0; }
+    .craft-status {
+      min-width: 0;
+      max-width: none;
+      line-height: 1.3;
+    }
+
+    .missing-list {
+      display: grid;
+      gap: 2px;
+    }
+
+    .missing-line {
+      display: block;
+      white-space: nowrap;
+    }
+
+    .data-note {
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .file-input {
+      padding: 10px;
+      min-height: auto;
+    }
+
+    .status-bar {
+      display: none;
+      margin-top: 18px;
+      padding: 11px 13px;
+      border: 1px solid rgba(87, 225, 159, 0.38);
+      border-radius: var(--radius-sm);
+      color: var(--success);
+      background: rgba(87, 225, 159, 0.07);
+    }
+
+    .status-bar.show { display: block; }
+    .status-bar.bad {
+      border-color: rgba(255, 107, 125, 0.38);
+      color: var(--danger);
+      background: rgba(255, 107, 125, 0.07);
+    }
+
+    .muted { color: var(--muted); }
+
+    @media (max-width: 900px) {
+      .grid-resources,
+      .data-grid { grid-template-columns: 1fr; }
+      table { min-width: 840px; }
+    }
+
+    @media (max-width: 760px) {
+      .hero-layout {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+      }
+
+      .hero-main {
+        flex: 1 1 auto;
+      }
+
+      .hero-side {
+        justify-content: flex-start;
+      }
+
+      .top-note {
+        gap: 7px;
+      }
+
+      .app-badge {
+        align-self: flex-start;
+        max-width: 100%;
+      }
+
+      .table-wrap {
+        overflow-x: visible;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      table {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        background: transparent;
+      }
+
+      colgroup,
+      thead {
+        display: none;
+      }
+
+      tbody {
+        display: grid;
+        gap: 10px;
+      }
+
+      tbody tr[data-row-key] {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(184px, auto);
+        gap: 9px 10px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: rgba(4, 8, 16, 0.44);
+      }
+
+      tbody tr[data-row-key] td {
+        display: block;
+        padding: 0;
+        border: 0;
+        min-width: 0;
+      }
+
+      tbody tr[data-row-key] td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 5px;
+        color: var(--muted-2);
+        font-size: 0.68rem;
+        line-height: 1;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 900;
+      }
+
+      tbody tr[data-row-key] .cell-item {
+        grid-column: 1 / -1;
+      }
+
+      tbody tr[data-row-key] .cell-item::before {
+        display: none;
+      }
+
+      tbody tr[data-row-key] .cell-shards {
+        grid-column: 1 / 2;
+      }
+
+      tbody tr[data-row-key] .cell-shards::before {
+        width: 58px;
+        margin: 0 auto 5px;
+        text-align: center;
+      }
+
+      tbody tr[data-row-key] .cell-shards .shard-edit {
+        margin: 0 auto;
+      }
+
+      tbody tr[data-row-key] .cell-leftovers {
+        grid-column: 2 / 3;
+      }
+
+      tbody tr[data-row-key] .cell-progress,
+      tbody tr[data-row-key] .cell-status,
+      tbody tr[data-row-key] .cell-action {
+        grid-column: 1 / -1;
+      }
+
+      tbody tr[data-row-key] .cell-action::before {
+        text-align: center;
+      }
+
+      tbody tr[data-row-key] .cell-action {
+        text-align: center;
+      }
+
+      .section-row {
+        display: block;
+      }
+
+      .section-row th {
+        display: block;
+        border: 1px solid rgba(126, 160, 213, 0.20);
+        border-radius: 12px;
+        margin-top: 4px;
+      }
+
+      .item-cell {
+        min-width: 0;
+      }
+
+      .item-title {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+      }
+
+      .leftovers {
+        grid-template-columns: repeat(3, 56px);
+        justify-content: start;
+      }
+
+      .mini-progress {
+        width: 100%;
+      }
+
+      .mini-bar {
+        min-width: 0;
+      }
+
+      .missing-line {
+        white-space: normal;
+      }
+
+      .action-cell .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app-shell {
+        width: min(100% - 18px, 1240px);
+        padding-top: 14px;
+      }
+
+      .hero {
+        border-radius: 20px;
+        padding: 16px;
+      }
+
+      .app-badge {
+        padding: 8px 12px 8px 8px;
+        font-size: 0.92rem;
+      }
+
+      .app-icon { width: 38px; height: 38px; }
+
+      .card-header,
+      .card-body { padding-left: 14px; padding-right: 14px; }
+
+      .data-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .resource-field input {
+        width: 118px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      tbody tr[data-row-key] {
+        grid-template-columns: 72px minmax(0, 1fr);
+      }
+
+      .leftovers {
+        grid-template-columns: repeat(3, 52px);
+        gap: 6px;
+      }
+
+      .rank-edit,
+      .small-input {
+        width: 52px;
+      }
+
+      .shard-edit,
+      .shard-input {
+        width: 58px;
+      }
+
+      tbody tr[data-row-key] .cell-shards::before {
+        width: 58px;
+      }
+
+      .item-img {
+        width: 50px;
+        height: 50px;
+      }
+
+      .item-cell {
+        grid-template-columns: 50px minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div class="hero-layout">
+        <div class="hero-main">
+          <div class="hero-title-row">
+            <h1>Craft Calculator</h1>
+          </div>
+          <p>
+            Track Normal crafting and leftover progress toward the next Epic item.
+          </p>
+          <div class="top-note" aria-label="Calculator scope">
+            <span class="pill"><span class="rank-dot rank-normal"></span>Normal crafting only</span>
+            <span class="pill"><span class="rank-dot rank-magic"></span>3 Normal = 1 Magic</span>
+            <span class="pill"><span class="rank-dot rank-rare"></span>3 Magic = 1 Rare</span>
+            <span class="pill"><span class="rank-dot rank-epic"></span>3 Rare = 1 Epic</span>
+          </div>
+        </div>
+        <div class="hero-side" aria-label="Game">
+          <div class="badge app-badge">
+            <img class="app-icon" src="assets/icons/site_avatar.webp" alt="Last Hunter K: Seoul icon" />
+            <span>Last Hunter K: Seoul</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="card grid" aria-labelledby="resources-title">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title" id="resources-title">Resource Panel</h2>
+          <p class="card-subtitle">Saved locally in this browser. Use JSON export/import for backup or transfer.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-resources" id="resourcePanel"></div>
+      </div>
+    </section>
+
+    <section class="card grid" aria-labelledby="summary-title">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title" id="summary-title">Summary Table</h2>
+          <p class="card-subtitle">
+            Edit shards and Normal / Magic / Rare leftovers directly.
+          </p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table>
+            <colgroup>
+              <col class="col-item">
+              <col class="col-shards">
+              <col class="col-leftovers">
+              <col class="col-progress">
+              <col class="col-status">
+              <col class="col-action">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="th-item">Item</th>
+                <th class="th-center">Shards</th>
+                <th class="th-center">Leftovers N / M / R</th>
+                <th class="th-center">Progress</th>
+                <th class="th-center">Materials Needed</th>
+                <th class="th-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="summaryBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="data-title">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title" id="data-title">Data Management</h2>
+          <p class="card-subtitle">Back up, transfer, or reset your local calculator data.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="data-note">
+          Your data is saved with <code>localStorage</code> in the current browser using the key
+          <code>lastHunterCraftCalculator_v1</code>. Use Export JSON and Import JSON for backups or transfer to another browser/device.
+        </p>
+        <div class="data-grid">
+          <div class="field">
+            <label for="jsonBox">JSON backup / import area</label>
+            <textarea id="jsonBox" spellcheck="false" placeholder="Export data here or paste JSON to import."></textarea>
+            <p class="field-help" id="dataStatus" aria-live="polite"></p>
+          </div>
+          <div class="grid">
+            <button class="btn" id="exportJson" type="button">Export JSON</button>
+            <div class="field">
+              <label for="importFile">Import JSON file</label>
+              <input class="file-input" id="importFile" type="file" accept="application/json,.json" />
+            </div>
+            <button class="btn" id="importJson" type="button">Import pasted JSON</button>
+            <button class="btn btn-danger" id="resetData" type="button">Reset all data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="status-bar" id="statusBar" role="status" aria-live="polite"></div>
+  </main>
+
+  <script>
+    "use strict";
+
+    /*************************************************************************
+     * Last Hunter K: Seoul Craft Calculator
+     * Single-file GitHub Pages app. No build step, backend, database, npm,
+     * React, or external dependency is required.
+     *************************************************************************/
+
+    /*************************************************************************
+     * Easy-to-edit item/faction data
+     *
+     * Armor uses factions. Weapons do not use factions.
+     * To add another weapon later, add it to the Weapon options array and add
+     * an item_<WeaponName> path to IMAGE_MAP.
+     *************************************************************************/
+    const FACTIONS = [
+      { id: "Hazard", label: "Hazard", specialization: "Sword Specialization", badge: "HZ" },
+      { id: "Beast", label: "Beast", specialization: "Hammer Specialization", badge: "BS" },
+      { id: "FourStar", label: "FourStar", specialization: "Katana Specialization", badge: "4S" },
+      { id: "NewEast", label: "NewEast", specialization: "Greatsword Specialization", badge: "NE" },
+      { id: "DCompany", label: "D-Company", specialization: "Bow Specialization", badge: "DC" }
+    ];
+
+    const ITEM_TYPES = [
+      {
+        id: "weapon",
+        label: "Weapon",
+        coreResource: "weaponCore",
+        coreLabel: "Weapon Core",
+        usesFaction: false,
+        // Weapons have no faction.
+        options: ["Sword", "Hammer", "Katana", "Greatsword", "Bow"]
+      },
+      {
+        id: "armor",
+        label: "Armor",
+        coreResource: "armorCore",
+        coreLabel: "Armor Core",
+        usesFaction: true,
+        options: ["Head", "Chest", "Pants", "Gloves", "Dagger"]
+      }
+    ];
+
+    /*************************************************************************
+     * Crafting recipe constants
+     * Only Normal item crafting is supported in this simplified calculator.
+     *************************************************************************/
+    const RECIPE = {
+      normalShardCost: 8,
+      coreCost: 5,
+      goldCost: 10000
+    };
+
+    const STORAGE_KEY = "lastHunterCraftCalculator_v1";
+    const RANKS = ["normal", "magic", "rare"];
+    const RANK_LABELS = { normal: "N", magic: "M", rare: "R" };
+    const RANK_LONG = { normal: "Normal", magic: "Magic", rare: "Rare" };
+
+    /*************************************************************************
+     * IMAGE_MAP placeholders
+     *
+     * Put final cropped images into the assets folder and reference them here.
+     * Uploaded screenshots were cropped only; no icons were redrawn or generated.
+     *
+     * Examples:
+     * - item_Hazard_Head: "assets/items/normal_hazard_head.png"
+     * - item_Sword: "assets/items/normal_sword.png"
+     * - core_armor: "assets/icons/armor_core.png"
+     *************************************************************************/
+    const IMAGE_MAP = {
+      gold: "assets/icons/gold.png",
+      core_armor: "assets/icons/armor_core.png",
+      core_weapon: "assets/icons/weapon_core.png",
+
+      faction_Hazard: "",
+      faction_Beast: "",
+      faction_FourStar: "",
+      faction_NewEast: "",
+      faction_DCompany: "",
+
+      item_Sword: "assets/items/normal_sword.png",
+      item_Hammer: "assets/items/normal_hammer.png",
+      item_Katana: "assets/items/normal_katana.png",
+      item_Greatsword: "assets/items/normal_greatsword.png",
+      item_Bow: "assets/items/normal_bow.png",
+
+      item_Hazard_Head: "assets/items/normal_hazard_head.png",
+      item_Beast_Head: "assets/items/normal_beast_head.png",
+      item_FourStar_Head: "assets/items/normal_fourstar_head.png",
+      item_NewEast_Head: "assets/items/normal_neweast_head.png",
+      item_DCompany_Head: "assets/items/normal_dcompany_head.png",
+
+      item_Hazard_Chest: "assets/items/normal_hazard_chest.png",
+      item_Beast_Chest: "assets/items/normal_beast_chest.png",
+      item_FourStar_Chest: "assets/items/normal_fourstar_chest.png",
+      item_NewEast_Chest: "assets/items/normal_neweast_chest.png",
+      item_DCompany_Chest: "assets/items/normal_dcompany_chest.png",
+
+      item_Hazard_Pants: "assets/items/normal_hazard_pants.png",
+      item_Beast_Pants: "assets/items/normal_beast_pants.png",
+      item_FourStar_Pants: "assets/items/normal_fourstar_pants.png",
+      item_NewEast_Pants: "assets/items/normal_neweast_pants.png",
+      item_DCompany_Pants: "assets/items/normal_dcompany_pants.png",
+
+      item_Hazard_Gloves: "assets/items/normal_hazard_gloves.png",
+      item_Beast_Gloves: "assets/items/normal_beast_gloves.png",
+      item_FourStar_Gloves: "assets/items/normal_fourstar_gloves.png",
+      item_NewEast_Gloves: "assets/items/normal_neweast_gloves.png",
+      item_DCompany_Gloves: "assets/items/normal_dcompany_gloves.png",
+
+      item_Hazard_Dagger: "assets/items/normal_hazard_dagger.png",
+      item_Beast_Dagger: "assets/items/normal_beast_dagger.png",
+      item_FourStar_Dagger: "assets/items/normal_fourstar_dagger.png",
+      item_NewEast_Dagger: "assets/items/normal_neweast_dagger.png",
+      item_DCompany_Dagger: "assets/items/normal_dcompany_dagger.png"
+    };
+
+    const dom = {
+      resources: document.getElementById("resourcePanel"),
+      summaryBody: document.getElementById("summaryBody"),
+      jsonBox: document.getElementById("jsonBox"),
+      dataStatus: document.getElementById("dataStatus"),
+      exportJson: document.getElementById("exportJson"),
+      importJson: document.getElementById("importJson"),
+      importFile: document.getElementById("importFile"),
+      resetData: document.getElementById("resetData"),
+      statusBar: document.getElementById("statusBar")
+    };
+
+    let state = createDefaultState();
+
+    function createDefaultState() {
+      const initial = {
+        version: 5,
+        resources: {
+          gold: 0,
+          armorCore: 0,
+          weaponCore: 0
+        },
+        items: {}
+      };
+
+      for (const entry of getAllCatalogEntries()) {
+        initial.items[entry.key] = createEmptyItemState();
+      }
+
+      return initial;
+    }
+
+    function createEmptyItemState() {
+      return { shards: 0, normal: 0, magic: 0, rare: 0 };
+    }
+
+    function getAllCatalogEntries() {
+      const entries = [];
+
+      for (const typeDef of ITEM_TYPES) {
+        if (typeDef.usesFaction) {
+          for (const item of typeDef.options) {
+            for (const faction of FACTIONS) {
+              entries.push({
+                key: `${typeDef.id}_${faction.id}_${item}`,
+                type: typeDef,
+                item,
+                faction,
+                name: `[${faction.label}] ${item}`,
+                imageKey: `item_${faction.id}_${item}`
+              });
+            }
+          }
+        } else {
+          for (const item of typeDef.options) {
+            entries.push({
+              key: `${typeDef.id}_${item}`,
+              type: typeDef,
+              item,
+              faction: null,
+              name: item,
+              imageKey: `item_${item}`
+            });
+          }
+        }
+      }
+
+      return entries;
+    }
+
+    function getEntryByKey(key) {
+      return getAllCatalogEntries().find(entry => entry.key === key) || null;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function toInt(value, fallback = 0) {
+      if (value === null || value === undefined || value === "") return fallback;
+      const parsed = Number(value);
+      if (!Number.isFinite(parsed)) return fallback;
+      return Math.trunc(parsed);
+    }
+
+    function clampInt(value, min, max) {
+      const intValue = toInt(value, min);
+      return Math.max(min, Math.min(max, intValue));
+    }
+
+    function sanitizeNonNegative(value) {
+      return Math.max(0, toInt(value, 0));
+    }
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat("en-US").format(sanitizeNonNegative(value));
+    }
+
+    /*************************************************************************
+     * Auto-synthesis normalization
+     *
+     * Visible leftovers must always be 0, 1, or 2.
+     * 3 Normal = 1 Magic
+     * 3 Magic = 1 Rare
+     * 3 Rare = 1 Epic
+     *
+     * Epic is not an editable input and is not shown as a table column.
+     * The function returns how many Epic items were created during a craft/import.
+     *************************************************************************/
+    function normalizeItem(item) {
+      item.shards = sanitizeNonNegative(item.shards);
+      item.normal = sanitizeNonNegative(item.normal);
+      item.magic = sanitizeNonNegative(item.magic);
+      item.rare = sanitizeNonNegative(item.rare);
+
+      if (item.normal >= 3) {
+        item.magic += Math.floor(item.normal / 3);
+        item.normal = item.normal % 3;
+      }
+
+      if (item.magic >= 3) {
+        item.rare += Math.floor(item.magic / 3);
+        item.magic = item.magic % 3;
+      }
+
+      let epicCreated = 0;
+      if (item.rare >= 3) {
+        epicCreated = Math.floor(item.rare / 3);
+        item.rare = item.rare % 3;
+      }
+
+      return epicCreated;
+    }
+
+    function normalizeAllItems() {
+      let created = 0;
+      for (const key of Object.keys(state.items)) {
+        created += normalizeItem(state.items[key]);
+      }
+      return created;
+    }
+
+    function getNormalEquivalent(item) {
+      return item.normal + item.magic * 3 + item.rare * 9;
+    }
+
+    function getMissingToEpic(item) {
+      const equivalent = getNormalEquivalent(item);
+      // After auto-normalization, visible leftovers are always below one Epic.
+      // 0 progress therefore means 27 Normal items are missing for the next Epic.
+      if (equivalent >= 27) return 0;
+      return 27 - equivalent;
+    }
+
+    function getSingleCraftStatus(entry, item) {
+      const missing = [];
+      const shardShortage = Math.max(0, RECIPE.normalShardCost - item.shards);
+      const coreAvailable = state.resources[entry.type.coreResource];
+      const coreShortage = Math.max(0, RECIPE.coreCost - coreAvailable);
+      const goldShortage = Math.max(0, RECIPE.goldCost - state.resources.gold);
+
+      if (shardShortage > 0) missing.push(`${shardShortage} shard${shardShortage === 1 ? "" : "s"}`);
+      if (coreShortage > 0) missing.push(`${coreShortage} ${entry.type.coreLabel}${coreShortage === 1 ? "" : "s"}`);
+      if (goldShortage > 0) missing.push(`${formatNumber(goldShortage)} Gold`);
+
+      return {
+        canCraft: missing.length === 0,
+        missing
+      };
+    }
+
+    function getEpicCraftStatus(entry, item) {
+      const normalMissing = getMissingToEpic(item);
+      const requiredShards = normalMissing * RECIPE.normalShardCost;
+      const requiredCores = normalMissing * RECIPE.coreCost;
+      const requiredGold = normalMissing * RECIPE.goldCost;
+      const missing = [];
+
+      const shardShortage = Math.max(0, requiredShards - item.shards);
+      const coreShortage = Math.max(0, requiredCores - state.resources[entry.type.coreResource]);
+      const goldShortage = Math.max(0, requiredGold - state.resources.gold);
+
+      if (shardShortage > 0) missing.push(`${shardShortage} shard${shardShortage === 1 ? "" : "s"}`);
+      if (coreShortage > 0) missing.push(`${coreShortage} ${entry.type.coreLabel}${coreShortage === 1 ? "" : "s"}`);
+      if (goldShortage > 0) missing.push(`${formatNumber(goldShortage)} Gold`);
+
+      return {
+        normalMissing,
+        requiredShards,
+        requiredCores,
+        requiredGold,
+        canReachEpic: missing.length === 0,
+        missing
+      };
+    }
+
+    function imageBox(key, label, fallback) {
+      const src = IMAGE_MAP[key] || "";
+      if (src) {
+        return `<div class="item-img" title="${escapeHtml(key)}"><img src="${escapeHtml(src)}" alt="${escapeHtml(label)}" loading="lazy"></div>`;
+      }
+      return `<div class="item-img" title="${escapeHtml(key)}"><span>${escapeHtml(fallback || "IMG")}</span></div>`;
+    }
+
+    function resourceIcon(key, fallback) {
+      const src = IMAGE_MAP[key] || "";
+      if (src) {
+        return `<span class="resource-icon"><img src="${escapeHtml(src)}" alt="" loading="lazy"></span>`;
+      }
+      return `<span class="resource-icon">${escapeHtml(fallback)}</span>`;
+    }
+
+    function renderResources() {
+      const resources = [
+        { key: "gold", label: "Gold", imageKey: "gold", fallback: "G" },
+        { key: "armorCore", label: "Armor Core", imageKey: "core_armor", fallback: "A" },
+        { key: "weaponCore", label: "Weapon Core", imageKey: "core_weapon", fallback: "W" }
+      ];
+
+      dom.resources.innerHTML = resources.map(resource => `
+        <div class="resource-field">
+          ${resourceIcon(resource.imageKey, resource.fallback)}
+          <div class="resource-main">
+            <label for="resource-${resource.key}">${escapeHtml(resource.label)}</label>
+            <input
+              id="resource-${resource.key}"
+              type="number"
+              min="0"
+              step="1"
+              inputmode="numeric"
+              data-resource="${resource.key}"
+              value="${state.resources[resource.key]}"
+            />
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function getSectionLabel(entry) {
+      if (entry.type.id === "weapon") return "Weapons";
+      return entry.item;
+    }
+
+    function renderSectionRow(label) {
+      return `
+        <tr class="section-row">
+          <th colspan="6">${escapeHtml(label)}</th>
+        </tr>
+      `;
+    }
+
+    function renderSummary() {
+      const entries = getAllCatalogEntries();
+      const preferredOrder = ["Weapons", "Head", "Chest", "Pants", "Gloves", "Dagger"];
+      const groups = new Map();
+
+      for (const entry of entries) {
+        const label = getSectionLabel(entry);
+        if (!groups.has(label)) groups.set(label, []);
+        groups.get(label).push(entry);
+      }
+
+      const orderedLabels = [
+        ...preferredOrder.filter(label => groups.has(label)),
+        ...Array.from(groups.keys()).filter(label => !preferredOrder.includes(label)).sort()
+      ];
+
+      dom.summaryBody.innerHTML = orderedLabels.map(label => {
+        const groupEntries = groups.get(label);
+        return renderSectionRow(label) + groupEntries.map(renderRow).join("");
+      }).join("");
+    }
+
+    function renderRow(entry) {
+      const item = state.items[entry.key] || createEmptyItemState();
+      const meta = entry.faction ? entry.faction.specialization : "";
+
+      return `
+        <tr data-row-key="${escapeHtml(entry.key)}">
+          <td class="cell-item" data-label="Item">
+            <div class="item-cell">
+              ${imageBox(entry.imageKey, entry.name, entry.faction ? entry.faction.badge : entry.item.slice(0, 2).toUpperCase())}
+              <div>
+                <div class="item-title">${escapeHtml(entry.name)}</div>
+                ${meta ? `<div class="item-meta">${escapeHtml(meta)}</div>` : ""}
+              </div>
+            </div>
+          </td>
+          <td class="cell-shards" data-label="Shards">
+            <div class="shard-edit">
+              <span class="rank-label shard-spacer" aria-hidden="true">&nbsp;</span>
+              <input
+                class="small-input shard-input"
+                type="number"
+                min="0"
+                step="1"
+                inputmode="numeric"
+                data-entry-key="${escapeHtml(entry.key)}"
+                data-field="shards"
+                value="${item.shards}"
+                aria-label="${escapeHtml(entry.name)} Normal Shards"
+              />
+            </div>
+          </td>
+          <td class="cell-leftovers" data-label="Leftovers N / M / R">${renderLeftoverInputs(entry, item)}</td>
+          <td class="cell-progress" data-label="Progress" data-progress-cell="${escapeHtml(entry.key)}">${renderProgressCell(item)}</td>
+          <td class="craft-status cell-status" data-label="Materials Needed" data-status-cell="${escapeHtml(entry.key)}">${renderStatusCell(entry, item)}</td>
+          <td class="action-cell cell-action" data-label="Action" data-action-cell="${escapeHtml(entry.key)}">${renderActionCell(entry, item)}</td>
+        </tr>
+      `;
+    }
+
+    function renderLeftoverInputs(entry, item) {
+      return `
+        <div class="leftovers">
+          ${RANKS.map(rank => `
+            <div class="rank-edit">
+              <span class="rank-label"><span class="rank-dot rank-${rank}"></span>${RANK_LABELS[rank]}</span>
+              <input
+                class="small-input"
+                type="number"
+                min="0"
+                max="2"
+                step="1"
+                inputmode="numeric"
+                data-entry-key="${escapeHtml(entry.key)}"
+                data-field="${rank}"
+                value="${item[rank]}"
+                aria-label="${escapeHtml(entry.name)} ${RANK_LONG[rank]} leftovers"
+              />
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderProgressCell(item) {
+      const normalEquivalent = getNormalEquivalent(item);
+      const progressPercent = Math.min(100, Math.max(0, (normalEquivalent / 27) * 100));
+      return `
+        <div class="progress-stack" title="${normalEquivalent} / 27 Normal-equivalent">
+          <div class="mini-progress">
+            <div class="mini-bar" aria-hidden="true"><div class="mini-fill" style="width:${progressPercent}%"></div></div>
+            <strong>${normalEquivalent} / 27</strong>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMissingCell(item) {
+      const missing = getMissingToEpic(item);
+      return `<div class="normal-missing">${missing}</div>`;
+    }
+
+    function renderStatusCell(entry, item) {
+      const status = getEpicCraftStatus(entry, item);
+      if (status.normalMissing === 0) {
+        return `<span class="ready">Ready from leftovers</span>`;
+      }
+      if (status.canReachEpic) {
+        return `<span class="ready">Enough materials · ${status.normalMissing} Normal</span>`;
+      }
+      return `<span class="missing missing-list">${status.missing.map(part => `<span class="missing-line">${escapeHtml(part)}</span>`).join("")}</span>`;
+    }
+
+    function renderActionCell(entry, item) {
+      const status = getSingleCraftStatus(entry, item);
+      return `
+        <button class="btn btn-primary" type="button" data-craft="${escapeHtml(entry.key)}" ${status.canCraft ? "" : "disabled"}>
+          Craft 1 Normal
+        </button>
+      `;
+    }
+
+    function updateEntryDerivedCells(key) {
+      const entry = getEntryByKey(key);
+      if (!entry) return;
+      const item = state.items[key] || createEmptyItemState();
+
+      const progressCell = dom.summaryBody.querySelector(`[data-progress-cell="${CSS.escape(key)}"]`);
+      const statusCell = dom.summaryBody.querySelector(`[data-status-cell="${CSS.escape(key)}"]`);
+      const actionCell = dom.summaryBody.querySelector(`[data-action-cell="${CSS.escape(key)}"]`);
+
+      if (progressCell) progressCell.innerHTML = renderProgressCell(item);
+      if (statusCell) statusCell.innerHTML = renderStatusCell(entry, item);
+      if (actionCell) actionCell.innerHTML = renderActionCell(entry, item);
+    }
+
+    function updateAllStatusCells() {
+      for (const entry of getAllCatalogEntries()) {
+        updateEntryDerivedCells(entry.key);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        console.warn("Could not save local data:", error);
+      }
+    }
+
+    function loadState() {
+      let raw = null;
+
+      try {
+        raw = localStorage.getItem(STORAGE_KEY);
+      } catch (error) {
+        console.warn("Could not read local data:", error);
+      }
+
+      if (!raw) {
+        state = createDefaultState();
+        saveState();
+        return;
+      }
+
+      try {
+        applyImportedData(JSON.parse(raw), { silent: true });
+      } catch (error) {
+        console.warn("Could not load saved data:", error);
+        state = createDefaultState();
+        saveState();
+      }
+    }
+
+    function applyImportedData(data, options = {}) {
+      const next = createDefaultState();
+
+      if (data && typeof data === "object") {
+        if (data.resources && typeof data.resources === "object") {
+          next.resources.gold = sanitizeNonNegative(data.resources.gold);
+          next.resources.armorCore = sanitizeNonNegative(data.resources.armorCore);
+          next.resources.weaponCore = sanitizeNonNegative(data.resources.weaponCore);
+        }
+
+        if (data.items && typeof data.items === "object") {
+          const knownKeys = new Set(getAllCatalogEntries().map(entry => entry.key));
+
+          for (const entry of getAllCatalogEntries()) {
+            const imported = data.items[entry.key];
+            if (imported && typeof imported === "object") {
+              next.items[entry.key] = sanitizeImportedItem(imported);
+            }
+          }
+
+          /***************************************************************
+           * Compatibility for older files where weapons may have been
+           * stored with faction keys. Since weapons have no faction now,
+           * merge those older records into the single weapon_<Item> row.
+           ***************************************************************/
+          for (const [key, value] of Object.entries(data.items)) {
+            if (knownKeys.has(key) || !value || typeof value !== "object") continue;
+
+            const parts = key.split("_");
+            if (parts[0] === "weapon" && parts.length >= 3) {
+              const weaponName = parts[parts.length - 1];
+              const mergedKey = `weapon_${weaponName}`;
+              if (next.items[mergedKey]) mergeItem(next.items[mergedKey], sanitizeImportedItem(value));
+            }
+          }
+
+          /***************************************************************
+           * Compatibility for an older build that stored Dagger under
+           * weapon_Dagger. Move that legacy row into [Hazard] Dagger
+           * instead of losing the user's data.
+           ***************************************************************/
+          if (data.items.weapon_Dagger && next.items.armor_Hazard_Dagger) {
+            mergeItem(next.items.armor_Hazard_Dagger, sanitizeImportedItem(data.items.weapon_Dagger));
+          }
+        }
+      }
+
+      state = next;
+      const created = normalizeAllItems();
+      saveState();
+      renderResources();
+      renderSummary();
+
+      if (!options.silent) {
+        const suffix = created > 0 ? ` Auto-synthesis created ${created} Epic item${created === 1 ? "" : "s"}; Epic inventory is not tracked as an input.` : "";
+        showStatus(`Import complete.${suffix}`);
+      }
+    }
+
+    function sanitizeImportedItem(imported) {
+      const item = createEmptyItemState();
+      item.shards = sanitizeNonNegative(imported.shards);
+      item.normal = sanitizeNonNegative(imported.normal);
+      item.magic = sanitizeNonNegative(imported.magic);
+      item.rare = sanitizeNonNegative(imported.rare);
+      normalizeItem(item);
+      return item;
+    }
+
+    function mergeItem(target, source) {
+      target.shards += sanitizeNonNegative(source.shards);
+      target.normal += sanitizeNonNegative(source.normal);
+      target.magic += sanitizeNonNegative(source.magic);
+      target.rare += sanitizeNonNegative(source.rare);
+      normalizeItem(target);
+    }
+
+    function craftOneNormal(key) {
+      const entry = getEntryByKey(key);
+      if (!entry) return;
+      const item = state.items[key];
+      const status = getSingleCraftStatus(entry, item);
+
+      if (!status.canCraft) {
+        showStatus(`Cannot craft ${entry.name}. Missing: ${status.missing.join(", ")}.`, true);
+        return;
+      }
+
+      item.shards -= RECIPE.normalShardCost;
+      state.resources[entry.type.coreResource] -= RECIPE.coreCost;
+      state.resources.gold -= RECIPE.goldCost;
+      item.normal += 1;
+      const epicCreated = normalizeItem(item);
+
+      saveState();
+      renderResources();
+      renderSummary();
+
+      const progress = getNormalEquivalent(item);
+      const message = epicCreated > 0
+        ? `Crafted 1 Normal ${entry.name}. Auto-synthesis created ${epicCreated} Epic item${epicCreated === 1 ? "" : "s"}.`
+        : `Crafted 1 Normal ${entry.name}. Current progress: ${progress} / 27 Normal-equivalent.`;
+      showStatus(message);
+    }
+
+    function exportJson() {
+      const data = {
+        version: state.version,
+        exportedAt: new Date().toISOString(),
+        resources: state.resources,
+        items: state.items
+      };
+      const text = JSON.stringify(data, null, 2);
+      dom.jsonBox.value = text;
+      dom.dataStatus.textContent = "Exported JSON to the text area.";
+
+      const blob = new Blob([text], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "last_hunter_craft_calculator_backup.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJsonFromText() {
+      const text = dom.jsonBox.value.trim();
+      if (!text) {
+        dom.dataStatus.textContent = "Paste JSON into the text area first.";
+        showStatus("Paste JSON into the text area first.", true);
+        return;
+      }
+
+      try {
+        applyImportedData(JSON.parse(text));
+        dom.dataStatus.textContent = "Imported and normalized.";
+      } catch (error) {
+        dom.dataStatus.textContent = "Import failed. Check that the JSON is valid.";
+        showStatus("Import failed. Check that the JSON is valid.", true);
+      }
+    }
+
+    function resetAllData() {
+      const ok = window.confirm("Reset all saved materials and leftovers in this browser? This cannot be undone unless you have exported a backup.");
+      if (!ok) return;
+      state = createDefaultState();
+      saveState();
+      renderResources();
+      renderSummary();
+      dom.jsonBox.value = "";
+      dom.dataStatus.textContent = "All local data was reset.";
+      showStatus("All local data was reset.");
+    }
+
+    function showStatus(message, isBad = false) {
+      dom.statusBar.textContent = message;
+      dom.statusBar.classList.toggle("bad", Boolean(isBad));
+      dom.statusBar.classList.add("show");
+      window.clearTimeout(showStatus.timer);
+      showStatus.timer = window.setTimeout(() => {
+        dom.statusBar.classList.remove("show");
+      }, 4600);
+    }
+
+    function bindEvents() {
+      dom.resources.addEventListener("input", event => {
+        const input = event.target.closest("[data-resource]");
+        if (!input) return;
+        const key = input.dataset.resource;
+        state.resources[key] = sanitizeNonNegative(input.value);
+        input.value = state.resources[key];
+        saveState();
+        updateAllStatusCells();
+      });
+
+      dom.summaryBody.addEventListener("input", event => {
+        const input = event.target.closest("[data-entry-key][data-field]");
+        if (!input) return;
+
+        const key = input.dataset.entryKey;
+        const field = input.dataset.field;
+        const item = state.items[key];
+        if (!item) return;
+
+        if (field === "shards") {
+          item.shards = sanitizeNonNegative(input.value);
+          input.value = item.shards;
+        } else if (RANKS.includes(field)) {
+          item[field] = clampInt(input.value, 0, 2);
+          input.value = item[field];
+        }
+
+        normalizeItem(item);
+        saveState();
+        updateEntryDerivedCells(key);
+      });
+
+      dom.summaryBody.addEventListener("click", event => {
+        const button = event.target.closest("[data-craft]");
+        if (!button) return;
+        craftOneNormal(button.dataset.craft);
+      });
+
+      dom.exportJson.addEventListener("click", exportJson);
+      dom.importJson.addEventListener("click", importJsonFromText);
+      dom.resetData.addEventListener("click", resetAllData);
+
+      dom.importFile.addEventListener("change", event => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          dom.jsonBox.value = String(reader.result || "");
+          importJsonFromText();
+        });
+        reader.readAsText(file);
+        event.target.value = "";
+      });
+    }
+
+    function init() {
+      loadState();
+      renderResources();
+      renderSummary();
+      bindEvents();
+    }
+
+    init();
+  </script>
+</body>
+</html>
